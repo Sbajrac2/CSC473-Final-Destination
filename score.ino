@@ -21,7 +21,7 @@
 
 /* ---------------- LCD & IR ---------------- */
 
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);   // same as yours
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);   
 
 #define IR_PIN 1
 IRrecv irrecv(IR_PIN);
@@ -84,7 +84,7 @@ byte currentDigitIndex = 0;
 
 // segment patterns for digits 0–9
 // This assumes: segments ON = HIGH, OFF = LOW, common cathode.
-// If your segments look inverted, flip HIGH/LOW in setSegments().
+// If segments look inverted, flip HIGH/LOW in setSegments().
 byte digitPatterns[10] = {
   // g f e d c b a   (bit order we'll use)
   B00111111, // 0
