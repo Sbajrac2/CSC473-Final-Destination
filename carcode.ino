@@ -12,7 +12,7 @@
  **********************************************************************/
 
 #include <IRremote.h>
-#include "LEDStripController.h"   // <--- your renamed Freenove LED library
+#include "LEDStripController.h"   
 
 /* ---- LED STRIP SETUP ---- */
 #define LED_I2C_ADDR 0x20
