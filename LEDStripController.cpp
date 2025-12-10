@@ -1,8 +1,6 @@
 // LEDStripController.cpp
 /**
  * WS2812B RGB LED Controller (I2C / UART)
- * Renamed from Freenove library for custom project use.
- * Author: StudentLED
  * Date: 2025
  */
 
