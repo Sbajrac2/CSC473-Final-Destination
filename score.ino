@@ -37,11 +37,11 @@ decode_results results;
 
 /* ---------------- GAME STATE ---------------- */
 
-// Modes: 0 = manual, 1 = auto maze, 2 = stop
+// Modes: 0 = manual, 1 = auto maze, 2 = emergency stop
 int mode = 0;
 
 /* --- Manual Mode Variables --- */
-const int deliveryTime = 30;      // seconds for each manual delivery
+const int deliveryTime = 30;      //seconds, for each manual delivery
 unsigned long manualStartTime = 0;
 bool manualTimerRunning = false;
 bool manualRoundActive = false;
@@ -54,13 +54,9 @@ unsigned long mazeStartTime = 0;
 bool mazeRunning = false;
 
 /* --- Score --- */
-int score = 0;   // 0–99 (shown on 7-seg)
+int score = 0;   //0–99 (shown on 7-seg display)
 
 /* ------------- 7-SEGMENT DEFINITIONS ------------- */
-/* 4-digit common-cathode/anode display (Elegoo style)
-   !!! TODO: Change these pin numbers to your real wiring !!!
-   For now they are placeholders.
-*/
 
 // segment pins (a,b,c,d,e,f,g)
 const int SEG_A = 2;
@@ -70,23 +66,21 @@ const int SEG_D = 5;
 const int SEG_E = 6;
 const int SEG_F = 13;
 const int SEG_G = A5;
-// (skip DP or add it if you wired it)
-const int DIG1 = A1;  // leftmost digit
+const int DIG1 = A1;  
 const int DIG2 = A2;
 const int DIG3 = A3;
-const int DIG4 = A4;  // rightmost digit
+const int DIG4 = A4; 
 
-// store which number to show on each digit (0–9 or -1 for blank)
+//storing which number to show on each digit(0–9 or -1 for blank)
 int scoreDigits[4] = {-1, -1, 0, 0};
 
 unsigned long lastSegRefresh = 0;
 byte currentDigitIndex = 0;
 
-// segment patterns for digits 0–9
-// This assumes: segments ON = HIGH, OFF = LOW, common cathode.
-// If segments look inverted, flip HIGH/LOW in setSegments().
+//segment patterns for digits 0–9
+//This assumes: segments ON = HIGH, OFF = LOW, common cathode.
 byte digitPatterns[10] = {
-  // g f e d c b a   (bit order we'll use)
+  // g f e d c b a  
   B00111111, // 0
   B00000110, // 1
   B01011011, // 2
@@ -106,7 +100,7 @@ void setup() {
   irrecv.enableIRIn();
 
   initSevenSeg();
-  setScoreOn7Seg(score);    // show 00 at start
+  setScoreOn7Seg(score);    //show 00 at start
 
   welcomeScreen();
 }
@@ -119,7 +113,7 @@ void loop() {
   if (irrecv.decode(&results)) {
     uint32_t code = results.value;
 
-    if (code != 0xFFFFFFFF) { // ignore repeat
+    if (code != 0xFFFFFFFF) { //ignoring repeat
       handleIR(code);
     }
 
@@ -176,7 +170,7 @@ void handleIR(uint32_t code) {
 
   // ------- Mode-specific buttons --------
 
-  // Start manual round: UP
+  //Start manual round: UP
   if (code == IR_UP && mode == 0 && !manualRoundActive) {
     startNewManualRound();
     return;
@@ -253,7 +247,7 @@ void updateManualCountdown() {
   unsigned long elapsed = (millis() - manualStartTime) / 1000;
   int remaining = deliveryTime - elapsed;
 
-  // show |Xs|
+  //show |Xs|
   lcd.setCursor(12, 1);
   lcd.print("|");
   lcd.print(max(remaining, 0));
@@ -274,16 +268,16 @@ void updateManualCountdown() {
 }
 
 void handleManualDeliverySuccess() {
-  // stop timer
+  //stop timer
   manualTimerRunning = false;
   manualRoundActive = false;
 
-  // increase score (clamp 0–99)
+  //increase score (clamp 0–99)
   score++;
   if (score > 99) score = 99;
   setScoreOn7Seg(score);
 
-  // show success message
+  //show success message
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("DELIVERED!");
@@ -292,7 +286,7 @@ void handleManualDeliverySuccess() {
   lcd.print(score);
   delay(2000);
 
-  // automatically start next round
+  //automatically start next round
   startNewManualRound();
 }
 
@@ -334,7 +328,7 @@ void handleMazeFinished() {
   lcd.print(elapsed);
   lcd.print("s");
 
-  // to run again, press '2' (Auto mode) manually
+  //to run again, press '2' (Auto mode) manually
 }
 
 /* ==================== 7-SEGMENT SCORE DISPLAY ==================== */
@@ -361,7 +355,7 @@ void initSevenSeg() {
 }
 
 void setSegments(byte pattern) {
-  // bit 0 -> a, 1 -> b, ..., 6 -> g
+  //bit 0 -> a, 1 -> b, ..., 6 -> g
   digitalWrite(SEG_A, pattern & B00000001 ? HIGH : LOW);
   digitalWrite(SEG_B, pattern & B00000010 ? HIGH : LOW);
   digitalWrite(SEG_C, pattern & B00000100 ? HIGH : LOW);
@@ -371,7 +365,7 @@ void setSegments(byte pattern) {
   digitalWrite(SEG_G, pattern & B01000000 ? HIGH : LOW);
 }
 
-// score: 0–99, show on right two digits, left two blank
+//score: 0–99, show on right two digits, left two blank
 void setScoreOn7Seg(int scoreValue) {
   if (scoreValue < 0) scoreValue = 0;
   if (scoreValue > 99) scoreValue = 99;
@@ -379,20 +373,19 @@ void setScoreOn7Seg(int scoreValue) {
   int tens = scoreValue / 10;
   int ones = scoreValue % 10;
 
-  // left two digits blank (-1)
+  //left two digits blank (-1)
   scoreDigits[0] = -1;
   scoreDigits[1] = -1;
   scoreDigits[2] = tens;
   scoreDigits[3] = ones;
 }
 
-// Call this VERY often from loop()
 void refreshSevenSeg() {
   unsigned long now = millis();
-  if (now - lastSegRefresh < 3) return;  // about ~300Hz / 4 digits
+  if (now - lastSegRefresh < 3) return;  //about ~300Hz / 4 digits
   lastSegRefresh = now;
 
-  // turn all digits OFF first
+  //turn all digits OFF first
   digitalWrite(DIG1, LOW);
   digitalWrite(DIG2, LOW);
   digitalWrite(DIG3, LOW);
@@ -403,7 +396,7 @@ void refreshSevenSeg() {
   if (digitVal >= 0 && digitVal <= 9) {
     setSegments(digitPatterns[digitVal]);
   } else {
-    // blank
+    //blank
     setSegments(0);
   }
 
@@ -417,3 +410,4 @@ void refreshSevenSeg() {
 
   currentDigitIndex = (currentDigitIndex + 1) % 4;
 }
+
