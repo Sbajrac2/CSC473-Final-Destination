@@ -1,8 +1,6 @@
 // LEDStripController.h
 /**
  * Brief   Controller for WS2812B RGB LED module (I2C / UART).
- * Author  StudentLED
- * Date    2025
  */
 
 #ifndef _LEDSTRIPCONTROLLER_H
